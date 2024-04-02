@@ -86,6 +86,7 @@ class CorpRecords(object):
 
     CUR_PATH = os.path.abspath(os.path.dirname(__file__))
     CIT_DATA_FILENAME = vars['cit_data_filename']
+    CIT_CFDATA_FILENAME = vars['cit_cfdata_filename']
     CIT_WEIGHTS_FILENAME = vars['cit_weights_filename']
     CIT_BLOWFACTORS_FILENAME = 'cit_panel_blowup.csv'
     VAR_INFO_FILENAME = vars['cit_records_variables_filename']
@@ -94,6 +95,7 @@ class CorpRecords(object):
 
     def __init__(self,
                  data=CIT_DATA_FILENAME,
+                 # cfdata=CIT_CFDATA_FILENAME,
                  data_type='cross-section',
                  gfactors=GrowFactors(),
                  weights=CIT_WEIGHTS_FILENAME,
@@ -104,7 +106,7 @@ class CorpRecords(object):
         self.vars = json.load(f)
         # pylint: disable=too-many-arguments,too-many-locals
         self.__data_year = start_year
-      
+        #self.max_lag_years = 10
         # read specified data
         if data_type == 'cross-section':
             self.data_type = data_type
@@ -181,17 +183,14 @@ class CorpRecords(object):
         Also, does extrapolation, reweighting, adjusting for new current year.
         """
         # move to next year
-            
         self.__current_year += 1
         #print('self.__current_year: ',self.__current_year)
         if self.data_type == 'cross-section':
             # apply variable extrapolation grow factors
+            #self._increment_cross_year()
             
-                     
             if self.gfactors is not None:
                 self._blowup(self.__current_year)
-                
-                
         else:
             self.increment_panel_year()
         # specify current-year sample weights
@@ -263,6 +262,65 @@ class CorpRecords(object):
         data2['PWR_DOWN_VAL_1ST_DAY_PY_15P'] = temp
         data3 = data2[to_keep]
         self._read_data(data3)
+    
+    def change_crossyear_vars(self):
+        """
+        Updates carried forward measures.
+        WARNING: MUST FIX UNIQUE CORPORATE ID FOR MERGING ACROSS YEARS
+        """
+        print('I am in change cross year vars')
+        file = 'Loss_cf.csv'
+        path = os.path.join(CorpRecords.CUR_PATH, 'loss_cf.csv')
+        
+        if os.path.exists(path):
+             if self.data_type == 'cross-section':
+                 data = pd.read_csv(path, index_col='Year')
+        carryforward_df = pd.DataFrame({'id_n': self.id_n,
+                                          'newloss1': self.newloss1,
+                                          'newloss2': self.newloss2,
+                                          'newloss3': self.newloss3,
+                                          'newloss4': self.newloss4,
+                                          'newloss5': self.newloss5,
+                                          'newloss6': self.newloss6,
+                                          'newloss7': self.newloss7,
+                                          'newloss8': self.newloss8,
+                                          'Cl_wdv': self.Cl_wdv})
+        
+        # data2 = taxdf.merge(right=carryforward_df, how='outer',
+        #                     on='id_n', indicator=True)
+        # merge_info = np.array(data2['_merge'])
+        # to_update = np.where(merge_info == 'both', True, False)
+        # to_keep = np.where(merge_info != 'right_only', True, False)
+        # data2['Loss_lag1'] = np.where(to_update, data2['newloss1'],
+        #                               data2['Loss_lag1'])
+        # data2['Loss_lag2'] = np.where(to_update, data2['newloss2'],
+        #                               data2['Loss_lag2'])
+        # data2['Loss_lag3'] = np.where(to_update, data2['newloss3'],
+        #                               data2['Loss_lag3'])
+        # data2['Loss_lag4'] = np.where(to_update, data2['newloss4'],
+        #                               data2['Loss_lag4'])
+        # data2['Loss_lag5'] = np.where(to_update, data2['newloss5'],
+        #                               data2['Loss_lag5'])
+       
+        # temp = np.where(to_update, data2['Op_wdv'], data2['Cl_wdv'])
+        # data2['Op_wdv'] = temp
+        # data3 = data2[to_keep]
+        # self._read_data(data3)
+        # newloss1 = self.newloss1 
+        # newloss2 = self.newloss2
+        # newloss3 = self.newloss3 
+        # newloss4 = self.newloss4 
+        # newloss5 = self.newloss5
+        # print('newloss3 is ', newloss3)
+        # setattr(self, 'Loss_lag1', newloss1)
+        # setattr(self, 'Loss_lag2', newloss2)
+        # setattr(self, 'Loss_lag3', newloss3)
+        # setattr(self, 'Loss_lag4', newloss4)
+        # setattr(self, 'Loss_lag5', newloss5)
+       
+        # print('Loss_lag3 is ', self.Loss_lag3)
+        
+       
 
     def set_current_year(self, new_current_year):
         """
@@ -361,6 +419,8 @@ class CorpRecords(object):
                 var = getattr(self, col)
                 var *= GF_COLS
                 setattr(self, col, var)
+               
+                
         else:
             attribute_data = list(getattr(self, attribute_columns[0]))
             attribute_types = set(attribute_data)
@@ -489,9 +549,15 @@ class CorpRecords(object):
                     taxdf = self._extract_panel_year()
         elif isinstance(data, str):
             data_path = os.path.join(CorpRecords.CUR_PATH, data)
+            #data_path1 = os.path.join(CorpRecords.CUR_PATH, cfdata)
             if os.path.exists(data_path):
+                #if os.path.exists(data_path1):
                 if self.data_type == 'cross-section':
                     taxdf = pd.read_csv(data_path)
+                        #cfdata = pd.read_csv(data_path1)
+                        #taxdf = taxdata.merge(cfdata, how="outer", on='id_n')
+                        
+                    #print('tax df is ', taxdf)
                 else:
                     # Read in the full panel data (all years)
                     self.full_panel = pd.read_csv(data_path)
@@ -504,6 +570,7 @@ class CorpRecords(object):
         else:
             msg = 'data is neither a string nor a Pandas DataFrame'
             raise ValueError(msg)
+            
         self.__dim = len(taxdf.index)
         self.__index = taxdf.index
         # create class variables using taxdf column names
@@ -529,6 +596,7 @@ class CorpRecords(object):
             msg = 'CorpRecords data missing one or more MUST_READ_VARS'
             raise ValueError(msg)
         # delete intermediate taxdf object
+             
         del taxdf
         # create other class variables that are set to all zeros
         UNREAD_VARS = CorpRecords.USABLE_READ_VARS - READ_VARS
@@ -540,11 +608,14 @@ class CorpRecords(object):
             else:
                 setattr(self, varname,
                         np.zeros(self.array_length, dtype=np.float64))
+       
+        
         # delete intermediate variables
         del READ_VARS
         del UNREAD_VARS
         del ZEROED_VARS
-
+        
+    
     def zero_out_changing_calculated_vars(self):
         """
         Set to zero all variables in the CorpRecords.CHANGING_CALCULATED_VARS.

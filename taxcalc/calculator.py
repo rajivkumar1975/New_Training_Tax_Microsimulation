@@ -326,32 +326,29 @@ class Calculator(object):
         """
         # store the current year values of loss and closing balance of
         # fixed assets to be moved to next year
-        if self.corprecords is not None:
-            bf_loss={}
-            for i in range(1, self.max_lag_years+1):
-                bf_loss[i] = getattr(self.__corprecords, 'newloss'+str(i))           
-            df1 = pd.DataFrame.from_dict(bf_loss)
-            df1.to_csv('bf_loss.csv')
-            #print('cf loss old is ', bf_loss)
-            cl_wdv = {}
-            for var in self.CROSS_YEAR_VARS:
-                cl_wdv[var] = getattr(self.__corprecords, 'Cl'+var[2:])
-            #print('cl wdv is ', cl_wdv)
-        #cl_wdv_bld = self.__records.Cl_WDV_Bld
-            cl_und_amt = getattr(self.__corprecords, 'Cl_und_amt')
-            cf_loss = {}
-            if self.corprecords is not None:         
-                for i in range(1, self.max_lag_years+1):
-                    setattr(self.__corprecords, 'Loss_lag'+str(i), bf_loss[i]) 
-                    cf_loss[i] = getattr(self.__corprecords, 'Loss_lag'+str(i))
-                df2 = pd.DataFrame.from_dict(cf_loss)  
-                df2.to_csv('cf_loss.csv')              
-                #self.__records.Loss_lag1 = bf_loss1
-                #print('bf loss lag 1 is ', self.__corprecords.Loss_lag1)
-                for var in self.CROSS_YEAR_VARS:
-                    setattr(self.__corprecords, 'Op'+var, cl_wdv[var])
-                #print('op wdv is ', cl_wdv)
-                setattr(self.__corprecords, 'Op_und_amt', cl_und_amt)
+        # if self.corprecords is not None:
+        # #     bf_loss={}
+        # #     for i in range(1, self.max_lag_years+1):
+        # #         bf_loss[i] = getattr(self.__corprecords, 'newloss'+str(i))           
+        # #     df1 = pd.DataFrame.from_dict(bf_loss)
+        # #     df1.to_csv('bf_loss.csv')
+        #     # cl_wdv = {}
+        #     # for var in self.CROSS_YEAR_VARS:
+        #     #     cl_wdv[var] = getattr(self.__corprecords, 'Cl'+var[2:])
+        #     cl_wdv = getattr(self.__corprecords, 'Cl_wdv')
+        #     # cf_loss = {}
+        #     if self.corprecords is not None:         
+        #         # for i in range(1, self.max_lag_years+1):
+        #         #     setattr(self.__corprecords, 'Loss_lag'+str(i), bf_loss[i]) 
+        #         #     cf_loss[i] = getattr(self.__corprecords, 'Loss_lag'+str(i))
+        #         # df2 = pd.DataFrame.from_dict(cf_loss)  
+        #         # df2.to_csv('cf_loss.csv')              
+        #         #self.__records.Loss_lag1 = bf_loss1
+        #         #print('bf loss lag 1 is ', self.__corprecords.Loss_lag1)
+        #         for var in self.CROSS_YEAR_VARS:
+        #             setattr(self.__corprecords, 'Op'+var, cl_wdv[var])
+        #         #print('op wdv is ', cl_wdv)
+        #         setattr(self.__corprecords, 'Op_wdv', cl_wdv)
 
         next_year = self.__policy.current_year + 1
         self.__policy.set_year(next_year)
@@ -360,28 +357,38 @@ class Calculator(object):
             self.__records.increment_year()        
         if self.gstrecords is not None:            
             self.__gstrecords.increment_year()
-        if self.corprecords is not None:            
-            self.__corprecords.increment_year()
+        if self.corprecords is not None:
             
-        # populate the opening values of loss and opening balance of
-        # fixed assets from the previous year    
-        cf_loss = {}
-        if self.corprecords is not None:         
+            # cl_wdv = getattr(self.__corprecords, 'Cl_wdv')
+            # setattr(self.__corprecords, 'Op_wdv', cl_wdv)
+            # print('Op_wdv is' , cl_wdv)
+                        
+            CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+            file = 'cfdata.csv'
+            path = os.path.join(CUR_PATH, file)
+            cfdata = pd.read_csv(path)
+            
             for i in range(1, self.max_lag_years+1):
-                setattr(self.__corprecords, 'Loss_lag'+str(i), bf_loss[i]) 
-                cf_loss[i] = getattr(self.__corprecords, 'Loss_lag'+str(i))
-            df2 = pd.DataFrame.from_dict(cf_loss)  
-            df2.to_csv('cf_loss.csv')              
-            #self.__records.Loss_lag1 = bf_loss1
-            #print('bf loss lag 1 is ', self.__corprecords.Loss_lag1)
-            for var in self.CROSS_YEAR_VARS:
-                setattr(self.__corprecords, 'Op'+var, cl_wdv[var])
-            #print('op wdv is ', cl_wdv)
-            setattr(self.__corprecords, 'Op_und_amt', cl_und_amt)
-        # self.__records.Op_WDV_Bld = cl_wdv_bld   
-        # self.__records.increment_year()
-        # self.__gstrecords.increment_year()
-        # self.__corprecords.increment_year()
+                setattr(self.__corprecords, 'Loss_lag'+str(i), cfdata['Loss_lag' + str(i)])
+            setattr(self.__corprecords, 'Op_wdv', cfdata['Op_wdv'])
+            self.__corprecords.increment_year()
+           
+           
+        
+        # cf_loss = {}
+        # if self.corprecords is not None:         
+        #     for i in range(1, self.max_lag_years+1):
+        #         setattr(self.__corprecords, 'Loss_lag'+str(i), bf_loss[i]) 
+        #         cf_loss[i] = getattr(self.__corprecords, 'Loss_lag'+str(i))
+        #     df2 = pd.DataFrame.from_dict(cf_loss)  
+        #     df2.to_csv('cf_loss.csv')              
+        #     #self.__records.Loss_lag1 = bf_loss1
+        #     #print('bf loss lag 1 is ', self.__corprecords.Loss_lag1)
+        #     for var in self.CROSS_YEAR_VARS:
+        #         setattr(self.__corprecords, 'Op'+var, cl_wdv[var])
+        #     #print('op wdv is ', cl_wdv)
+        #     setattr(self.__corprecords, 'Op_wdv', cl_wdv)
+        
 
     def advance_to_year(self, year):
         """
@@ -414,7 +421,10 @@ class Calculator(object):
             self.__records.zero_out_changing_calculated_vars()
         if self.gstrecords is not None:        
             self.__gstrecords.zero_out_changing_calculated_vars()
-        if self.corprecords is not None:        
+        if self.corprecords is not None:
+            #self.__corprecords.change_crossyear_vars()
+            
+            #print('Newloss is ', newloss1)
             self.__corprecords.zero_out_changing_calculated_vars()            
         # For now, don't zero out for corporate
         # pdb.set_trace()

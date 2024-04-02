@@ -35,7 +35,7 @@ def initialize_vars(self):
     self.selected_value = ""
     self.selected_year = 2022
     self.sub_directory = "taxcalc"
-    self.year_list = [2021, 2022, 2023, 2024, 2025, 2026, 2027]
+    self.year_list = [2022, 2023, 2024, 2025, 2026, 2027]
     #self.year_list = [2023, 2024, 2025, 2026, 2027]
     # Include a check whether the years are valid by looking at the 
     # selected growfactors file
@@ -70,33 +70,34 @@ def initialize_vars(self):
     #self.vars['gdp_filename'] = 'gdp_nominal_armenia.csv'
     
 
-    self.vars['DEFAULTS_FILENAME'] = "current_law_policy_cit_armenia.json"    
-    self.vars['GROWFACTORS_FILENAME'] = "growfactors_cit_armenia.csv"
-    self.vars['cit_data_filename'] = "cit_data_armenia.csv"
-    self.vars['cit_weights_filename'] = "cit_weights_armenia.csv"
-    self.vars['cit_records_variables_filename'] = "records_variables_cit_armenia.json"    
-    self.vars['cit_benchmark_filename'] = "taxcalc/tax_incentives_benchmark_cit_armenia.json"
-    self.vars['cit_elasticity_filename'] = "elasticity_cit_training.json"
-    self.vars['cit_functions_filename'] = "functions_cit_armenia.py"
-    self.vars['cit_function_names_filename'] = "function_names_cit_armenia.json"
-    self.vars['cit_distribution_json_filename'] = 'cit_distribution_armenia.json'
-    self.vars['tot_distribution_json_filename'] = 'tot_distribution_armenia.json'
-    self.vars['gdp_filename'] = 'gdp_nominal_cit_armenia.csv'
- 
-    '''
-    self.vars['DEFAULTS_FILENAME'] = "current_law_policy_cit_uganda.json"    
-    self.vars['GROWFACTORS_FILENAME'] = "growfactors_cit_uganda.csv"
-    self.vars['cit_data_filename'] = "cit_data_uganda.csv"
-    self.vars['cit_weights_filename'] = "cit_weights_uganda.csv"
-    self.vars['cit_records_variables_filename'] = "records_variables_cit_uganda.json"    
-    self.vars['cit_benchmark_filename'] = "taxcalc/tax_incentives_benchmark_cit_uganda.json"
-    self.vars['cit_elasticity_filename'] = "elasticity_cit_uganda.json"
-    self.vars['cit_functions_filename'] = "functions_cit_uganda.py"
-    self.vars['cit_function_names_filename'] = "function_names_cit_uganda.json"
-    self.vars['cit_distribution_json_filename'] = 'cit_distribution_uganda.json'
-    self.vars['gdp_filename'] = 'gdp_nominal_uganda.csv'
-    '''
-    self.vars['cit_max_lag_years'] = 5
+    # self.vars['DEFAULTS_FILENAME'] = "current_law_policy_cit_armenia.json"    
+    # self.vars['GROWFACTORS_FILENAME'] = "growfactors_cit_armenia.csv"
+    # self.vars['cit_data_filename'] = "cit_data_armenia.csv"
+    # self.vars['cit_weights_filename'] = "cit_weights_armenia.csv"
+    # self.vars['cit_records_variables_filename'] = "records_variables_cit_armenia.json"    
+    # self.vars['cit_benchmark_filename'] = "taxcalc/tax_incentives_benchmark_cit_armenia.json"
+    # self.vars['cit_elasticity_filename'] = "elasticity_cit_training.json"
+    # self.vars['cit_functions_filename'] = "functions_cit_armenia.py"
+    # self.vars['cit_function_names_filename'] = "function_names_cit_armenia.json"
+    # self.vars['cit_distribution_json_filename'] = 'cit_distribution_armenia.json'
+    # self.vars['tot_distribution_json_filename'] = 'tot_distribution_armenia.json'
+    # self.vars['gdp_filename'] = 'gdp_nominal_cit_armenia.csv'
+    
+
+    self.vars['DEFAULTS_FILENAME'] = "current_law_policy_cit_cambodia.json" 
+    self.vars['GROWFACTORS_FILENAME'] = "growfactors_cit_cambodia.csv"
+    self.vars['cit_data_filename'] = "cit_data_cambodia.csv"
+    self.vars['cit_weights_filename'] = "cit_weights_cambodia.csv"
+    self.vars['cit_records_variables_filename'] = "records_variables_cit_cambodia.json"    
+    self.vars['cit_benchmark_filename'] = "taxcalc/tax_incentives_benchmark_cit_cambodia.json"
+    self.vars['cit_elasticity_filename'] = "elasticity_cit_cambodia.json"
+    self.vars['cit_functions_filename'] = "functions_cit_cambodia.py"
+    self.vars['cit_function_names_filename'] = "function_names_cit_cambodia.json"
+    self.vars['cit_distribution_json_filename'] = 'cit_distribution_cambodia.json'
+    self.vars['gdp_filename'] = 'gdp_nominal_cambodia.csv'
+    self.vars['cit_cfdata_filename'] = "cfdata.csv"
+    
+    self.vars['cit_max_lag_years'] = 10
 
     self.vars['vat_data_filename'] = "vat.csv"
     self.vars['vat_weights_filename'] = "vat_weights.csv"
@@ -261,8 +262,8 @@ def display_entry(self, widget, tax_type):
            
         elif tax_type == 'cit':
             
-            self.vars['DEFAULTS_FILENAME'] = "current_law_policy_cit_armenia.json"    
-            self.vars['GROWFACTORS_FILENAME'] = "growfactors_cit_armenia.csv"
+            self.vars['DEFAULTS_FILENAME'] = "current_law_policy_cit_cambodia.json"    
+            self.vars['GROWFACTORS_FILENAME'] = "growfactors_cit_cambodia.csv"
             self.vars['start_year'] = 2022
             self.vars['data_start_year'] = 2022
             self.vars['SALARY_VARIABLE'] = "SALARY"
@@ -405,7 +406,7 @@ def tab1(self):
     self.fontStyle_title = tkfont.Font(family=font, size="22", weight="bold")
     self.s = ttk.Style()
     self.s.configure('my.TButton', font=self.fontStyle)        
-    self.text_font = (font, '10')
+    self.text_font = (font, '9')
     
     self.block_settings_pos_x = {}
     self.status = {}
